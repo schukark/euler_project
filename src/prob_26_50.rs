@@ -73,6 +73,7 @@ mod prob_27 {
         let mut primes: HashSet<i64> = HashSet::new();
 
         let mut sieve: Vec<bool> = vec![true; limit + 1];
+        sieve[1] = false;
 
         let mut i = 2;
 
@@ -349,9 +350,8 @@ mod prob_33 {
             }
         }
         let binary_u64 = gcd::binary_u64(numerator, denominator);
-        (numerator, denominator) = (numerator / binary_u64, denominator / binary_u64);
 
-        denominator
+        denominator / binary_u64
     }
 }
 
@@ -423,6 +423,185 @@ mod prob_35 {
     }
 }
 
+mod prob_36 {
+    fn is_palindromic(number: u64) -> bool {
+        number
+            .to_string()
+            .chars()
+            .eq(number.to_string().chars().rev())
+    }
+
+    fn is_palindromic_binary(number: u64) -> bool {
+        format!("{number:b}").eq(&format!("{number:b}").chars().rev().collect::<String>())
+    }
+
+    pub fn solve() -> u64 {
+        let mut result = 0;
+
+        for number in 1..1_000_000 {
+            if !is_palindromic(number) || !is_palindromic_binary(number) {
+                continue;
+            }
+
+            if number % 2 == 0 && number % 10 == 0 {
+                continue;
+            }
+
+            result += number;
+        }
+
+        result
+    }
+}
+
+mod prob_37 {
+    use std::collections::HashSet;
+
+    use super::prob_27::prime_number_sieve;
+
+    fn check_left_truncatable(number: i64, primes: &HashSet<i64>) -> bool {
+        let number_string = number.to_string();
+
+        for i in 0..number_string.len() {
+            if !primes.contains(&(number_string[i..]).parse::<i64>().unwrap()) {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    fn check_right_truncatable(number: i64, primes: &HashSet<i64>) -> bool {
+        let number_string = number.to_string();
+
+        for i in 1..=number_string.len() {
+            if !primes.contains(&(number_string[..i]).parse::<i64>().unwrap()) {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    pub fn solve() -> i64 {
+        let mut result = 0;
+        let primes = prime_number_sieve(1_000_000);
+
+        for i in 10..1_000_000 {
+            if !primes.contains(&i) {
+                continue;
+            }
+
+            if !check_left_truncatable(i, &primes) || !check_right_truncatable(i, &primes) {
+                continue;
+            }
+
+            result += i;
+        }
+
+        result
+    }
+}
+
+mod prob_38 {
+    fn check_pandigital(number: u64) -> bool {
+        let mut digits = [0; 10];
+        digits[0] = 1;
+
+        number
+            .to_string()
+            .chars()
+            .for_each(|symbol| digits[symbol.to_digit(10).unwrap() as usize] += 1);
+
+        digits == [1; 10]
+    }
+
+    pub fn solve() -> u64 {
+        let mut result = 0;
+
+        for number in 9..1_000_000 {
+            let mut cur_string = number.to_string();
+            for n in 2..=9 {
+                cur_string += &(number * n).to_string();
+
+                if cur_string.len() > 9 {
+                    break;
+                }
+
+                if !check_pandigital(cur_string.parse::<u64>().unwrap()) {
+                    continue;
+                }
+
+                result = u64::max(result, cur_string.parse::<u64>().unwrap());
+                break;
+            }
+        }
+
+        result
+    }
+}
+
+mod prob_39 {
+    fn count_solutions(perimeter: u64) -> u64 {
+        let mut count = 0;
+
+        for i in 1..perimeter {
+            for j in 1..perimeter - i {
+                let k = perimeter - i - j;
+
+                if i * i + j * j != k * k {
+                    continue;
+                }
+
+                count += 1;
+            }
+        }
+
+        count
+    }
+
+    pub fn solve() -> u64 {
+        let (mut best_perimeter, mut best_count) = (0, 0);
+        for i in 1..=1000 {
+            let tmp = count_solutions(i);
+
+            if tmp > best_count {
+                best_count = tmp;
+                best_perimeter = i;
+            }
+        }
+
+        best_perimeter
+    }
+}
+
+mod prob_40 {
+    pub fn solve() -> u128 {
+        let mut cur = 1;
+        let mut cur_string = String::new();
+
+        while cur_string.len() < 1_000_000 {
+            cur_string += &cur.to_string();
+            cur += 1;
+        }
+
+        let mut result = 1;
+
+        assert_eq!(cur_string.chars().nth(11).unwrap(), '1');
+
+        for i in [1, 10, 100, 1_000, 10_000, 100_000, 1_000_000] {
+            result *= cur_string
+                .chars()
+                .nth(i as usize - 1)
+                .unwrap()
+                .to_digit(10)
+                .unwrap() as u128;
+        }
+
+        result
+    }
+}
+
 pub fn main() {
     println!("Problem 26: {}", prob_26::solve(1000));
     println!("Problem 27: {}", prob_27::solve());
@@ -434,4 +613,9 @@ pub fn main() {
     println!("Problem 33: {}", prob_33::solve());
     println!("Problem 34: {}", prob_34::solve());
     println!("Problem 35: {}", prob_35::solve(1_000_000));
+    println!("Problem 36: {}", prob_36::solve());
+    println!("Problem 37: {}", prob_37::solve());
+    println!("Problem 38: {}", prob_38::solve());
+    println!("Problem 39: {}", prob_39::solve());
+    println!("Problem 40: {}", prob_40::solve());
 }
