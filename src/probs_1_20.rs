@@ -1,10 +1,9 @@
 use std::{
     collections::{BTreeMap, HashMap},
     fs,
-    hash::Hash,
 };
 
-use num_bigint::{BigInt, BigUint};
+use num_bigint::BigUint;
 
 pub fn prob_1_compute(limit: u32) -> u64 {
     let mut result: u64 = 0;
@@ -428,7 +427,7 @@ pub fn prob_16_compute(limit: u64) -> u64 {
 
     let mut result = "1".to_owned();
 
-    for i in 0..limit {
+    for _i in 0..limit {
         result = add_strings(&result, &result);
     }
 
