@@ -602,6 +602,214 @@ mod prob_40 {
     }
 }
 
+mod prob_41 {
+    use super::prob_27::prime_number_sieve;
+
+    fn check_pandigital(number: i64, n: usize) -> bool {
+        let mut digits = vec![0; n + 1];
+        digits[0] = 1;
+
+        if number
+            .to_string()
+            .chars()
+            .any(|f| f.to_digit(10).unwrap() as usize > n)
+        {
+            return false;
+        }
+
+        number
+            .to_string()
+            .chars()
+            .for_each(|a| digits[a.to_digit(10).unwrap() as usize] += 1);
+
+        digits == vec![1; n + 1]
+    }
+
+    pub fn solve() -> i64 {
+        assert!(check_pandigital(2143, 4));
+
+        let mut result = 0;
+
+        // sum of 1 + .. + 9 = 45, which is divisible by 9 => not a prime
+        // sum of 1 + .. + 8 = 36 which is divisible by 9 => not a prime
+        // the search space is now up to 10 ^ 7 - 1
+        let primes = prime_number_sieve(10_000_000);
+
+        for i in 2..10_000_000 {
+            if !primes.contains(&i) {
+                continue;
+            }
+
+            let n = i.to_string().len();
+
+            if !check_pandigital(i, n) {
+                continue;
+            }
+
+            result = i;
+        }
+
+        result
+    }
+}
+
+mod prob_42 {
+    use std::fs;
+
+    fn read_from_file() -> Vec<String> {
+        fs::read_to_string("src/txts/prob_42.txt")
+            .unwrap()
+            .split(',')
+            .map(|a| a.trim_end_matches('\"').trim_start_matches('\"').to_owned())
+            .collect::<Vec<String>>()
+    }
+
+    fn is_triangular(number: u64) -> bool {
+        // n(n + 1) / 2 = k
+        // n ^ 2 + n - 2k = 0
+        // n = (-1 + sqrt(1 + 8k)) / 2
+
+        let n = (f64::sqrt(1.0_f64 + 8.0_f64 * number as f64) - 1.0_f64) / 2.0_f64;
+        f64::abs(n - n.floor()) < 1e-5
+    }
+
+    fn calculate_score(word: &str) -> u64 {
+        word.chars().map(|a| (a as u8 - b'A' + 1) as u64).sum()
+    }
+
+    pub fn solve() -> u64 {
+        assert_eq!(calculate_score("SKY"), 55);
+        assert!(is_triangular(calculate_score("SKY")));
+
+        let mut count = 0;
+
+        let words = read_from_file();
+
+        for word in &words {
+            let score = calculate_score(word);
+
+            if is_triangular(score) {
+                count += 1;
+            }
+        }
+
+        count
+    }
+}
+
+mod prob_43 {
+    fn next_permutation(nums: &mut [i32]) -> bool {
+        use std::cmp::Ordering;
+        // or use feature(array_windows) on nightly
+        let last_ascending = match nums.windows(2).rposition(|w| w[0] < w[1]) {
+            Some(i) => i,
+            None => {
+                nums.reverse();
+                return false;
+            }
+        };
+
+        let swap_with = nums[last_ascending + 1..]
+            .binary_search_by(|n| i32::cmp(&nums[last_ascending], n).then(Ordering::Less))
+            .unwrap_err(); // cannot fail because the binary search will never succeed
+        nums.swap(last_ascending, last_ascending + swap_with);
+        nums[last_ascending + 1..].reverse();
+        true
+    }
+
+    pub fn solve() -> u64 {
+        let mut count = 0;
+
+        let mut digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let divisors = [1, 2, 3, 5, 7, 11, 13, 17];
+
+        while next_permutation(&mut digits) {
+            if digits[0] == 0 {
+                continue;
+            }
+
+            if digits.iter().enumerate().all(|(index, _value)| {
+                index >= 8
+                    || (digits[index] * 100 + digits[index + 1] * 10 + digits[index + 2])
+                        % divisors[index]
+                        == 0
+            }) {
+                count += digits
+                    .iter()
+                    .map(|a| a.to_string())
+                    .collect::<Vec<String>>()
+                    .join("")
+                    .parse::<u64>()
+                    .unwrap();
+            }
+        }
+
+        count
+    }
+}
+
+mod prob_44 {
+    fn is_pentagonal(number: u64) -> bool {
+        // k = n(3n - 1) / 2 => 3n^2 - n - 2k = 0
+        // n = (1 +- sqrt(1 + 24k)) / 2
+
+        let n = (f64::sqrt(1.0_f64 + 24.0_f64 * number as f64) + 1.0_f64) / 6.0_f64;
+        f64::abs(n - n.round()) < 1e-5
+    }
+
+    pub fn solve() -> u64 {
+        assert!([1, 5, 12, 22, 35, 51, 70, 92, 117, 145]
+            .iter()
+            .all(|a| is_pentagonal(*a)));
+
+        let mut result = u64::MAX;
+
+        for n in 1..10_000 {
+            for m in n + 1..10_000 {
+                let first = n * (3 * n - 1) / 2;
+                let second = m * (3 * m - 1) / 2;
+
+                if is_pentagonal(first + second) && is_pentagonal(second - first) {
+                    result = u64::min(result, second - first);
+                }
+            }
+        }
+
+        result
+    }
+}
+
+mod prob_45 {
+    fn is_triangular(number: u64) -> bool {
+        // k = n(n + 1) / 2 => n^2 + n - 2k = 0
+        // n = (-1 +- sqrt(1 + 8k)) / 2
+
+        let n = (f64::sqrt(1.0_f64 + 8.0_f64 * number as f64) - 1.0_f64) / 2.0_f64;
+        f64::abs(n - n.round()) < 1e-5
+    }
+
+    fn is_pentagonal(number: u64) -> bool {
+        // k = n(3n - 1) / 2 => 3n^2 - n - 2k = 0
+        // n = (1 +- sqrt(1 + 24k)) / 6
+
+        let n = (f64::sqrt(1.0_f64 + 24.0_f64 * number as f64) + 1.0_f64) / 6.0_f64;
+        f64::abs(n - n.round()) < 1e-5
+    }
+
+    pub fn solve() -> u64 {
+        let mut cur_hex = 144;
+
+        loop {
+            let cur_num = cur_hex * (2 * cur_hex - 1);
+
+            if is_triangular(cur_num) && is_pentagonal(cur_num) {
+                return cur_num;
+            }
+            cur_hex += 1;
+        }
+    }
+}
+
 pub fn main() {
     println!("Problem 26: {}", prob_26::solve(1000));
     println!("Problem 27: {}", prob_27::solve());
@@ -618,4 +826,9 @@ pub fn main() {
     println!("Problem 38: {}", prob_38::solve());
     println!("Problem 39: {}", prob_39::solve());
     println!("Problem 40: {}", prob_40::solve());
+    println!("Problem 41: {}", prob_41::solve());
+    println!("Problem 42: {}", prob_42::solve());
+    println!("Problem 43: {}", prob_43::solve());
+    println!("Problem 44: {}", prob_44::solve());
+    println!("Problem 45: {}", prob_45::solve());
 }
