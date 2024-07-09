@@ -432,3 +432,82 @@ pub fn prob_16_compute(limit: u64) -> u64 {
 
     digit_sum(&result)
 }
+
+fn count_letters(number: u64) -> usize {
+    assert!(number <= 1000);
+
+    if number == 1000 {
+        return "onethousand".len();
+    }
+
+    let letters = [0, 3, 3, 5, 4, 4, 3, 5, 5, 4];
+    let letters_tens = [0, 3, 6, 6, 5, 5, 5, 7, 6, 6];
+
+    let mut result = 0;
+
+    if number >= 100 {
+        result += letters[(number / 100) as usize];
+        result += "hundred".len();
+
+        if number % 100 != 0 {
+            result += "and".len();
+        } else {
+            return result;
+        }
+    }
+
+    let number = number % 100;
+
+    if !(11..20).contains(&number) {
+        result += letters_tens[(number / 10) as usize] + letters[(number % 10) as usize];
+    } else {
+        result += match number {
+            0..=10 => 0,
+            11 => "eleven".len(),
+            12 => "twelve".len(),
+            13 => "thirteen".len(),
+            14 => "fourteen".len(),
+            15 => "fifteen".len(),
+            16 => "sixteen".len(),
+            17 => "seventeen".len(),
+            18 => "eighteen".len(),
+            19 => "nineteen".len(),
+            20..=u64::MAX => 0,
+        }
+    }
+
+    result
+}
+
+pub fn prob_17_compute(limit: u64) -> usize {
+    assert_eq!(count_letters(342), 23);
+    assert_eq!(count_letters(115), 20);
+    assert_eq!(count_letters(105), 17);
+    assert_eq!(count_letters(555), "fivehundredandfiftyfive".len());
+    assert_eq!(count_letters(25), "twentyfive".len());
+    assert_eq!(count_letters(5), "five".len());
+    assert_eq!(count_letters(110), "onehundredandten".len());
+    assert_eq!(count_letters(900), "ninehundred".len());
+
+    (1..=limit).map(count_letters).sum()
+}
+
+pub fn main() {
+    println!("Problem 1: {}", prob_1_compute(1000));
+    println!("Problem 2: {}", prob_2_compute());
+    println!("Problem 3: {}", prob_3_compute(600851475143));
+    println!("Problem 4: {}", prob_4_compute(3));
+    println!("Problem 5: {}", prob_5_compute(20));
+    println!("Problem 6: {}", prob_6_compute(100));
+    println!("Problem 7: {}", prob_7_compute(10001));
+    println!("Problem 8: {}", prob_8_compute());
+    println!("Problem 9: {:?}", prob_9_compute(1000));
+    println!("Problem 10: {}", prob_10_compute(2_000_000));
+    println!("Problem 11: {}", prob_11_compute());
+    println!("Problem 12: {}", prob_12_compute(500));
+    println!("Problem 13: {}", prob_13_compute());
+    println!("Problem 14: {}", prob_14_compute(1_000_000));
+    println!("Problem 15: {}", prob_15_compute(20, 20));
+    println!("Problem 16: {}", prob_16_compute(1000));
+    println!("Problem 17: {}", prob_17_compute(1000));
+}
