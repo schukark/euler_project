@@ -69,7 +69,7 @@ mod prob_26 {
 mod prob_27 {
     use std::collections::HashSet;
 
-    fn prime_number_sieve(limit: usize) -> HashSet<i64> {
+    pub fn prime_number_sieve(limit: usize) -> HashSet<i64> {
         let mut primes: HashSet<i64> = HashSet::new();
 
         let mut sieve: Vec<bool> = vec![true; limit + 1];
@@ -234,10 +234,204 @@ mod prob_30 {
     }
 }
 
+mod prob_31 {
+    pub fn solve(amount: u64) -> u64 {
+        let mut count = 0;
+
+        for c200 in 0..=amount / 200 {
+            for c100 in 0..=(amount - 200 * c200) / 100 {
+                for c50 in 0..=(amount - 200 * c200 - 100 * c100) / 50 {
+                    for c20 in 0..=(amount - 200 * c200 - 100 * c100 - 50 * c50) / 20 {
+                        for c10 in 0..=(amount - 200 * c200 - 100 * c100 - 50 * c50 - 20 * c20) / 10
+                        {
+                            for c5 in 0..=(amount
+                                - 200 * c200
+                                - 100 * c100
+                                - 50 * c50
+                                - 20 * c20
+                                - 10 * c10)
+                                / 5
+                            {
+                                let cur_amount = amount
+                                    - 200 * c200
+                                    - 100 * c100
+                                    - 50 * c50
+                                    - 20 * c20
+                                    - 10 * c10
+                                    - 5 * c5;
+
+                                count += cur_amount / 2 + 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        count
+    }
+}
+
+mod prob_32 {
+    fn check_pandigital(mult1: u64, mult2: u64, prod: u64) -> bool {
+        let mut digits = [0; 10];
+        digits[0] = 1;
+
+        mult1
+            .to_string()
+            .chars()
+            .for_each(|f| digits[f.to_digit(10).unwrap() as usize] += 1);
+
+        mult2
+            .to_string()
+            .chars()
+            .for_each(|f| digits[f.to_digit(10).unwrap() as usize] += 1);
+
+        prod.to_string()
+            .chars()
+            .for_each(|f| digits[f.to_digit(10).unwrap() as usize] += 1);
+
+        digits == [1; 10]
+    }
+
+    pub fn solve() -> u64 {
+        let mut result = 0;
+        for product in 1000..10000 {
+            for mult1 in 1..100 {
+                if product % mult1 != 0 {
+                    continue;
+                }
+
+                if check_pandigital(mult1, product / mult1, product) {
+                    result += product;
+                    break;
+                }
+            }
+        }
+
+        result
+    }
+}
+
+mod prob_33 {
+    fn check_quasi_cancellation(num: u64, denom: u64) -> bool {
+        if num % 10 == 0 && denom % 10 == 0 {
+            return false;
+        }
+
+        if num * (denom / 10) == denom * (num / 10) && (denom / 10) == (num / 10) {
+            return true;
+        }
+        if num * (denom % 10) == denom * (num / 10) && (denom / 10) == (num % 10) {
+            return true;
+        }
+        if num * (denom / 10) == denom * (num % 10) && (denom % 10) == (num / 10) {
+            return true;
+        }
+        if num * (denom % 10) == denom * (num % 10) && (denom % 10) == (num % 10) {
+            return true;
+        }
+
+        false
+    }
+
+    pub fn solve() -> u64 {
+        let (mut numerator, mut denominator) = (1, 1);
+
+        for num in 10..100 {
+            for denom in num + 1..100 {
+                if !check_quasi_cancellation(num, denom) {
+                    continue;
+                }
+
+                numerator *= num;
+                denominator *= denom;
+            }
+        }
+        let binary_u64 = gcd::binary_u64(numerator, denominator);
+        (numerator, denominator) = (numerator / binary_u64, denominator / binary_u64);
+
+        denominator
+    }
+}
+
+mod prob_34 {
+    pub fn solve() -> u64 {
+        let mut result = 0;
+
+        for number in 3..10_000_000 {
+            let factorial_sum: u64 = number
+                .to_string()
+                .chars()
+                .map(|a| (1..=a.to_digit(10).unwrap() as u64).product::<u64>())
+                .sum();
+
+            if factorial_sum != number {
+                continue;
+            }
+
+            result += number;
+        }
+
+        result
+    }
+}
+
+mod prob_35 {
+    use std::collections::HashSet;
+
+    use super::prob_27::prime_number_sieve;
+
+    fn get_all_rotations(number: u64) -> Vec<u64> {
+        let mut result: Vec<u64> = Vec::new();
+
+        let number_string = number.to_string();
+
+        for i in 0..number_string.len() {
+            result.push(
+                (number_string[i..].to_owned() + &number_string[..i])
+                    .parse::<u64>()
+                    .unwrap(),
+            );
+        }
+
+        result
+    }
+
+    pub fn solve(limit: u64) -> usize {
+        let primes = prime_number_sieve(limit as usize);
+        let mut answer: HashSet<u64> = HashSet::new();
+
+        for i in 2..limit {
+            if answer.contains(&i) || !primes.contains(&(i as i64)) {
+                continue;
+            }
+
+            if get_all_rotations(i)
+                .iter()
+                .any(|f| !primes.contains(&(*f as i64)))
+            {
+                continue;
+            }
+
+            get_all_rotations(i).iter().for_each(|f| {
+                answer.insert(*f);
+            });
+        }
+
+        answer.len()
+    }
+}
+
 pub fn main() {
     println!("Problem 26: {}", prob_26::solve(1000));
     println!("Problem 27: {}", prob_27::solve());
     println!("Problem 28: {}", prob_28::solve(1001));
     println!("Problem 29: {}", prob_29::solve());
     println!("Problem 30: {}", prob_30::solve());
+    println!("Problem 31: {}", prob_31::solve(200));
+    println!("Problem 32: {}", prob_32::solve());
+    println!("Problem 33: {}", prob_33::solve());
+    println!("Problem 34: {}", prob_34::solve());
+    println!("Problem 35: {}", prob_35::solve(1_000_000));
 }
