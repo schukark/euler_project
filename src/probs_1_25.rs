@@ -1,10 +1,3 @@
-use std::{
-    collections::{BTreeMap, HashMap},
-    fs,
-};
-
-use num_bigint::BigUint;
-
 mod prob_1 {
     pub fn solve(limit: u32) -> u64 {
         let mut result: u64 = 0;
