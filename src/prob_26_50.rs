@@ -810,6 +810,259 @@ mod prob_45 {
     }
 }
 
+mod prob_46 {
+    use super::prob_27::prime_number_sieve;
+
+    pub fn solve() -> i64 {
+        let primes = prime_number_sieve(1_000_000);
+
+        for number in 4..1_000_000 {
+            let mut sq = 1;
+            let mut is_representable = false;
+
+            if number % 2 == 0 || primes.contains(&number) {
+                continue;
+            }
+
+            while 2 * sq * sq < number {
+                if primes.contains(&(number - 2 * sq * sq)) {
+                    is_representable = true;
+                    break;
+                }
+
+                sq += 1;
+            }
+
+            if !is_representable {
+                return number;
+            }
+        }
+
+        i64::MAX
+    }
+}
+
+mod prob_47 {
+    fn count_distinct_primes(number: u64) -> u64 {
+        let mut cur_div = 2;
+        let mut number = number;
+        let mut count = 0;
+
+        while number > 1 {
+            if number % cur_div == 0 {
+                count += 1;
+                while number % cur_div == 0 {
+                    number /= cur_div;
+                }
+            }
+
+            cur_div += 1;
+        }
+
+        count
+    }
+
+    #[test]
+    pub fn test_prime_count() {
+        assert_eq!(count_distinct_primes(14), 2);
+        assert_eq!(count_distinct_primes(15), 2);
+        assert_eq!(count_distinct_primes(644), 3);
+        assert_eq!(count_distinct_primes(645), 3);
+        assert_eq!(count_distinct_primes(646), 3);
+    }
+
+    pub fn solve(count: u64) -> u64 {
+        let mut cur_start = 2;
+
+        loop {
+            let mut is_correct = true;
+
+            for i in 1..=count {
+                if count_distinct_primes(cur_start + i - 1) != count {
+                    cur_start += i;
+                    is_correct = false;
+                    break;
+                }
+            }
+
+            if is_correct {
+                return cur_start;
+            }
+        }
+    }
+
+    #[test]
+    pub fn solve_2() {
+        assert_eq!(solve(2), 14);
+    }
+
+    #[test]
+    pub fn solve_3() {
+        assert_eq!(solve(3), 644);
+    }
+}
+
+mod prob_48 {
+    fn pow_mod(base: u128, exp: u128, modulus: u128) -> u128 {
+        if exp == 0 {
+            1
+        } else if exp % 2 == 1 {
+            return (base * pow_mod(base, exp - 1, modulus)) % modulus;
+        } else {
+            let result = pow_mod(base, exp / 2, modulus);
+            return (result * result) % modulus;
+        }
+    }
+
+    pub fn solve(limit: u128) -> u128 {
+        let mut result = 0;
+        const MOD: u128 = 10_u128.pow(10);
+
+        for i in 1..=limit {
+            result = (result + pow_mod(i, i, MOD)) % MOD;
+        }
+
+        result
+    }
+
+    #[test]
+    pub fn solve_10() {
+        assert_eq!(solve(10), 405071317);
+    }
+}
+
+mod prob_49 {
+    use super::prob_27::prime_number_sieve;
+
+    fn _same_digits(number1: u64, number2: u64) -> bool {
+        let mut digits = vec![0; 10];
+        number1
+            .to_string()
+            .chars()
+            .for_each(|a| digits[a.to_digit(10).unwrap() as usize] += 1);
+
+        number2
+            .to_string()
+            .chars()
+            .for_each(|a| digits[a.to_digit(10).unwrap() as usize] -= 1);
+
+        digits == vec![0; 10]
+    }
+
+    fn same_digits(numbers: &Vec<u64>) -> bool {
+        for i in 1..numbers.len() {
+            if !_same_digits(numbers[i], numbers[i - 1]) {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    pub fn solve() -> String {
+        let primes = prime_number_sieve(10_000);
+
+        for middle in 1000..10_000 {
+            for step in 1..u64::min(middle, 9_999 - middle) {
+                if !same_digits(&vec![middle - step, middle, middle + step]) {
+                    continue;
+                }
+
+                if [middle - step, middle, middle + step]
+                    .iter()
+                    .any(|a| !primes.contains(&(*a as i64)))
+                {
+                    continue;
+                }
+
+                if middle == 4817 {
+                    continue;
+                }
+
+                return (middle - step).to_string()
+                    + &middle.to_string()
+                    + &(middle + step).to_string();
+            }
+        }
+
+        String::new()
+    }
+}
+
+mod prob_50 {
+    fn prime_number_sieve(limit: usize) -> Vec<i64> {
+        let mut primes: Vec<i64> = Vec::new();
+
+        let mut sieve: Vec<bool> = vec![true; limit + 1];
+        sieve[0] = false;
+        sieve[1] = false;
+
+        let mut i = 2;
+
+        while i * i <= limit {
+            if !sieve[i] {
+                i += 1;
+                continue;
+            }
+
+            let mut j = i * i;
+            while j <= limit {
+                sieve[j] = false;
+                j += i;
+            }
+            i += 1;
+        }
+
+        sieve.iter().enumerate().for_each(|(index, value)| {
+            if !*value {
+                return;
+            }
+
+            primes.push(index as i64);
+        });
+
+        primes
+    }
+
+    pub fn solve(limit: u64) -> i64 {
+        let (mut prime, mut length) = (0, 0);
+        let primes = prime_number_sieve(limit as usize);
+        let mut prefix = Vec::new();
+        prefix.push(0);
+
+        primes
+            .iter()
+            .for_each(|value| prefix.push(prefix.last().unwrap() + value));
+
+        for i in 0..prefix.len() {
+            for j in i + 1..prefix.len() - 1 {
+                let cur_sum = prefix[j + 1] - prefix[i];
+
+                if primes.binary_search(&cur_sum).is_err() {
+                    continue;
+                }
+
+                if length < j - i + 1 {
+                    length = j - i + 1;
+                    prime = cur_sum;
+                }
+            }
+        }
+
+        prime
+    }
+
+    #[test]
+    pub fn solve_100() {
+        assert_eq!(solve(100), 41);
+    }
+
+    #[test]
+    pub fn solve_1000() {
+        assert_eq!(solve(1000), 953);
+    }
+}
+
 pub fn main() {
     println!("Problem 26: {}", prob_26::solve(1000));
     println!("Problem 27: {}", prob_27::solve());
@@ -831,4 +1084,9 @@ pub fn main() {
     println!("Problem 43: {}", prob_43::solve());
     println!("Problem 44: {}", prob_44::solve());
     println!("Problem 45: {}", prob_45::solve());
+    println!("Problem 46: {}", prob_46::solve());
+    println!("Problem 47: {}", prob_47::solve(4));
+    println!("Problem 48: {}", prob_48::solve(1000));
+    println!("Problem 49: {}", prob_49::solve());
+    println!("Problem 50: {}", prob_50::solve(1_000_000));
 }
