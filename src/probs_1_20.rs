@@ -4,6 +4,8 @@ use std::{
     hash::Hash,
 };
 
+use num_bigint::{BigInt, BigUint};
+
 pub fn prob_1_compute(limit: u32) -> u64 {
     let mut result: u64 = 0;
     for i in 1..limit {
@@ -492,6 +494,102 @@ pub fn prob_17_compute(limit: u64) -> usize {
     (1..=limit).map(count_letters).sum()
 }
 
+pub fn prob_18_compute() -> u64 {
+    let grid: Vec<Vec<u64>> = fs::read_to_string("src/txts/prob_18.txt")
+        .unwrap()
+        .split('\n')
+        .map(|a| {
+            a.split(' ')
+                .map(|b| b.parse::<u64>().unwrap())
+                .collect::<Vec<u64>>()
+        })
+        .collect();
+
+    let mut dp: Vec<Vec<u64>> = vec![Vec::new(); grid.len()];
+    for i in 0..dp.len() {
+        dp[i] = vec![0; grid[i].len()];
+    }
+
+    for i in 0..dp.len() {
+        for j in 0..dp[i].len() {
+            let mut result = 0;
+
+            if i > 0 && j > 0 {
+                result = dp[i - 1][j - 1];
+            }
+            if i > 0 && j < dp[i - 1].len() {
+                result = u64::max(result, dp[i - 1][j]);
+            }
+
+            dp[i][j] = u64::max(dp[i][j], result + grid[i][j]);
+        }
+    }
+
+    *dp[dp.len() - 1].iter().max().unwrap()
+}
+
+pub fn prob_19_compute() -> u64 {
+    let mut day = 0;
+    let mut weekday = 0;
+    let mut month = 0;
+    let mut year = 1900;
+
+    let month_daycount = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    let mut sunday_count = 0;
+
+    while year != 2001 {
+        if (1901..=2000).contains(&year) && weekday == 6 && day == 0 {
+            // println!("{:2}.{:2}.{:4}", day + 1, month + 1, year);
+            sunday_count += 1;
+        }
+
+        day += 1;
+        weekday = (weekday + 1) % 7;
+
+        let mut cur_month_days = month_daycount[month];
+
+        let is_leap = |x| {
+            if x % 400 == 0 {
+                return true;
+            } else if x % 100 == 0 {
+                return false;
+            }
+            x % 4 == 0
+        };
+
+        if month == 1 && is_leap(year) {
+            cur_month_days = 29;
+        }
+
+        if day >= cur_month_days {
+            day = 0;
+            month += 1;
+        }
+
+        if month >= 12 {
+            year += 1;
+            month = 0;
+        }
+    }
+
+    sunday_count
+}
+
+pub fn prob_20_compute() -> u64 {
+    let mut result = BigUint::new(vec![1]);
+
+    for i in 2..=100 {
+        result = BigUint::new(vec![i]) * &result;
+    }
+
+    result
+        .to_string()
+        .chars()
+        .map(|a| a.to_digit(10).unwrap() as u64)
+        .sum()
+}
+
 pub fn main() {
     println!("Problem 1: {}", prob_1_compute(1000));
     println!("Problem 2: {}", prob_2_compute());
@@ -510,4 +608,7 @@ pub fn main() {
     println!("Problem 15: {}", prob_15_compute(20, 20));
     println!("Problem 16: {}", prob_16_compute(1000));
     println!("Problem 17: {}", prob_17_compute(1000));
+    println!("Problem 18: {}", prob_18_compute());
+    println!("Problem 19: {}", prob_19_compute());
+    println!("Problem 20: {}", prob_20_compute());
 }
