@@ -652,7 +652,7 @@ mod prob_54 {
             (
                 Hand::from_string("3H 3D 3S 6C 6H"), // Full House, Threes over Sixes
                 Hand::from_string("2C 2H 2S 9D 9C"), // Full House, Twos over Nines
-                2,
+                1,
             ),
             // Pair with different high cards
             (
@@ -682,7 +682,7 @@ mod prob_54 {
             (
                 Hand::from_string("2H 2D 5S 5H 8C"), // Two Pair, 5s and 2s
                 Hand::from_string("3H 3D 4S 4H AC"), // Two Pair, 4s and 3s
-                2,
+                1,
             ),
             // High Card with kicker comparison
             (
