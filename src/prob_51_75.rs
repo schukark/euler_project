@@ -1,7 +1,7 @@
 use std::env;
 
 mod prob_51 {
-    fn prime_number_sieve(limit: usize) -> Vec<u64> {
+    pub fn prime_number_sieve(limit: usize) -> Vec<u64> {
         let mut primes: Vec<u64> = Vec::new();
 
         let mut sieve: Vec<bool> = vec![true; limit + 1];
@@ -760,12 +760,258 @@ mod prob_54 {
     }
 }
 
+mod prob_55 {
+    use num_bigint::BigUint;
+
+    fn is_palindromic(number: &BigUint) -> bool {
+        number
+            .to_string()
+            .chars()
+            .eq(number.to_string().chars().rev())
+    }
+
+    fn iterate(num: u32, limit: u32) -> u32 {
+        let mut count = 0;
+        let mut cur_num = num.to_string().parse::<BigUint>().unwrap();
+
+        loop {
+            cur_num = cur_num.clone()
+                + cur_num
+                    .to_string()
+                    .chars()
+                    .rev()
+                    .collect::<String>()
+                    .parse::<BigUint>()
+                    .unwrap();
+            count += 1;
+            if is_palindromic(&cur_num) || count > limit {
+                break;
+            }
+        }
+
+        count
+    }
+
+    #[test]
+    pub fn test_iteration() {
+        assert_eq!(iterate(47, 50), 1);
+        assert_eq!(iterate(349, 50), 3);
+        assert!(iterate(196, 50) > 50);
+    }
+
+    pub fn solve() -> u32 {
+        const LIMIT: u32 = 50_u32;
+        let mut count = 0;
+
+        for i in 1..10_000 {
+            if iterate(i, LIMIT) > LIMIT {
+                count += 1;
+            }
+        }
+
+        count
+    }
+}
+
+mod prob_56 {
+    use num_bigint::BigUint;
+
+    fn calculate_digit_sum(number: &BigUint) -> u32 {
+        number
+            .to_string()
+            .chars()
+            .map(|digit| digit.to_digit(10).unwrap())
+            .sum::<u32>()
+    }
+
+    pub fn solve() -> u32 {
+        let mut max_sum = 0;
+
+        for a in 1..100 {
+            for b in 1..100 {
+                let cur_num = BigUint::new(vec![a]).pow(b);
+
+                let digit_sum = calculate_digit_sum(&cur_num);
+
+                if digit_sum > max_sum {
+                    max_sum = digit_sum;
+                }
+            }
+        }
+
+        max_sum
+    }
+}
+
+mod prob_57 {
+    use num_bigint::BigUint;
+
+    pub fn solve(limit: u64) -> i32 {
+        let mut num_start = (BigUint::new(vec![3]), BigUint::new(vec![7]));
+        let mut denom_start = (BigUint::new(vec![2]), BigUint::new(vec![5]));
+
+        let mut count = 0;
+
+        for _i in 3..=limit {
+            let (a, b) = num_start;
+            num_start = (b.clone(), a + BigUint::new(vec![2]) * b);
+
+            let (a, b) = denom_start;
+            denom_start = (b.clone(), a + BigUint::new(vec![2]) * b);
+
+            if denom_start.1.to_string().len() < num_start.1.to_string().len() {
+                count += 1;
+            }
+        }
+
+        count
+    }
+
+    #[test]
+    pub fn test_expansion() {
+        assert_eq!(solve(8), 1);
+    }
+}
+
+mod prob_58 {
+    use super::prob_51::prime_number_sieve;
+
+    pub fn solve(ratio: f32) -> u64 {
+        // TR diagonal: 4n^2-2n+1
+        // TL diagonal: 4n^2+1
+        // BL diagonal: 4n^2+2n+1
+
+        let primes = prime_number_sieve(1_000_000_000);
+
+        let mut i = 1;
+        let mut count = 0;
+
+        loop {
+            if primes.binary_search(&(i * (4 * i - 2) + 1)).is_ok() {
+                count += 1;
+            }
+
+            if primes.binary_search(&(4 * i * i + 1)).is_ok() {
+                count += 1;
+            }
+
+            if primes.binary_search(&(4 * i * i + 2 * i + 1)).is_ok() {
+                count += 1;
+            }
+
+            if count as f32 / (4.0_f32 * i as f32 + 1.0_f32) < ratio {
+                return 2 * i + 1;
+            }
+
+            i += 1;
+        }
+    }
+}
+
+mod prob_59 {
+    use std::fs;
+
+    fn read_words() -> Vec<String> {
+        let mut collect = fs::read_to_string("src/txts/common_english.txt")
+            .unwrap()
+            .split('\n')
+            .map(|a| a.trim().to_owned())
+            .collect::<Vec<_>>();
+        collect.sort();
+        collect
+    }
+
+    fn read_encrypted() -> Vec<u8> {
+        fs::read_to_string("src/txts/prob_59.txt")
+            .unwrap()
+            .split(',')
+            .map(|a| a.parse::<u8>().unwrap())
+            .collect::<Vec<_>>()
+    }
+
+    fn decrypt(data: &Vec<u8>, cypher: &[char]) -> Vec<u8> {
+        assert!(data.len() % cypher.len() == 0);
+
+        let mut new_data = data.clone();
+
+        for i in 0..data.len() {
+            new_data[i] ^= cypher[i % cypher.len()] as u8;
+        }
+
+        new_data
+    }
+
+    fn check_common_words(data: &[u8], words: &[String]) -> bool {
+        data.iter()
+            .map(|a| *a as char)
+            .map(|a| a.to_ascii_lowercase().to_string())
+            .collect::<Vec<_>>()
+            .join("")
+            .split_whitespace()
+            .filter(|word| words.binary_search(&word.to_owned().to_lowercase()).is_ok())
+            .count() as f32
+            / data
+                .iter()
+                .map(|a| *a as char)
+                .map(|a| a.to_ascii_lowercase().to_string())
+                .collect::<Vec<_>>()
+                .join("")
+                .split_whitespace()
+                .count() as f32
+            > 0.5
+    }
+
+    pub fn solve() -> u32 {
+        let words = &read_words();
+        let data = read_encrypted();
+
+        for letter1 in 'a'..='z' {
+            for letter2 in 'a'..='z' {
+                for letter3 in 'a'..='z' {
+                    let cypher = [letter1, letter2, letter3];
+                    if check_common_words(&decrypt(&data, &cypher), words) {
+                        return decrypt(&data, &cypher)
+                            .iter()
+                            .map(|a| *a as u32)
+                            .sum::<u32>();
+                    }
+                }
+            }
+        }
+
+        0
+    }
+
+    #[test]
+    pub fn test_decryption() {
+        let data = vec![65, 42, 107];
+        let cypher = ['*', 'A', 'k'];
+        assert_eq!(decrypt(&data, &cypher), vec![107, 107, 0]);
+    }
+
+    #[test]
+    pub fn test_common_words() {
+        let data = "Hello rust language project maths"
+            .chars()
+            .map(|a| a as u8)
+            .collect::<Vec<_>>();
+        let words = read_words();
+
+        assert!(check_common_words(&data, &words));
+    }
+}
+
 pub fn main() {
     match env::args().collect::<Vec<_>>()[1].as_ref() {
         "51" => println!("Problem 51: {}", prob_51::solve(8)),
         "52" => println!("Problem 52: {}", prob_52::solve()),
         "53" => println!("Problem 53: {}", prob_53::solve()),
         "54" => println!("Problem 54: {}", prob_54::solve()),
+        "55" => println!("Problem 55: {}", prob_55::solve()),
+        "56" => println!("Problem 56: {}", prob_56::solve()),
+        "57" => println!("Problem 57: {}", prob_57::solve(1000)),
+        "58" => println!("Problem 58: {}", prob_58::solve(0.1)),
+        "59" => println!("Problem 59: {}", prob_59::solve()),
         _ => panic!("Incorrect configuration"),
     }
 }
