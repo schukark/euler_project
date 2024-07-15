@@ -1,5 +1,7 @@
 use std::env;
 
+use prob_71::Fraction;
+
 mod prob_51 {
     pub fn prime_number_sieve(limit: usize) -> Vec<u64> {
         let mut primes: Vec<u64> = Vec::new();
@@ -929,10 +931,10 @@ mod prob_59 {
             .collect::<Vec<_>>()
     }
 
-    fn decrypt(data: &Vec<u8>, cypher: &[char]) -> Vec<u8> {
+    fn decrypt(data: &[u8], cypher: &[char]) -> Vec<u8> {
         assert!(data.len() % cypher.len() == 0);
 
-        let mut new_data = data.clone();
+        let mut new_data = data.to_vec();
 
         for i in 0..data.len() {
             new_data[i] ^= cypher[i % cypher.len()] as u8;
@@ -1001,6 +1003,223 @@ mod prob_59 {
     }
 }
 
+mod prob_60 {}
+
+mod prob_61 {}
+
+mod prob_62 {
+    use std::collections::hash_map::Entry;
+    use std::collections::HashMap;
+
+    fn digits(number: u128) -> [u32; 10] {
+        let mut digits = [0; 10];
+
+        number
+            .to_string()
+            .chars()
+            .for_each(|digit| digits[digit.to_digit(10).unwrap() as usize] += 1);
+
+        digits
+    }
+
+    pub fn solve(limit: u32) -> u128 {
+        let mut lookup: HashMap<[u32; 10], Vec<u32>> = HashMap::new();
+
+        let mut cur_number = 1;
+
+        loop {
+            let digits_cur = digits(cur_number * cur_number * cur_number);
+            if let Entry::Vacant(e) = lookup.entry(digits_cur) {
+                e.insert(vec![cur_number as u32]);
+            } else {
+                lookup.get_mut(&digits_cur).unwrap().push(cur_number as u32);
+            }
+
+            if lookup
+                .get(&digits_cur)
+                .is_some_and(|f| f.len() == limit as usize)
+            {
+                return (*lookup.get(&digits_cur).unwrap().first().unwrap() as u128).pow(3);
+            }
+
+            cur_number += 1;
+        }
+    }
+}
+
+mod prob_63 {
+    fn check_n(n: u32) -> usize {
+        (1..=9)
+            .filter(|i| (*i as u128).pow(n).to_string().len() == n as usize)
+            .count()
+    }
+
+    pub fn solve() -> usize {
+        let mut cur_n = 1;
+        let mut answer = 0;
+
+        loop {
+            let tmp = check_n(cur_n);
+
+            if tmp == 0 {
+                break;
+            }
+
+            answer += tmp;
+            cur_n += 1;
+        }
+
+        answer
+    }
+}
+
+mod prob_67 {
+    use std::fs;
+
+    pub fn solve() -> u64 {
+        let grid: Vec<Vec<u64>> = fs::read_to_string("src/txts/prob_67.txt")
+            .unwrap()
+            .split('\n')
+            .map(|a| {
+                a.split(' ')
+                    .map(|b| b.parse::<u64>().unwrap())
+                    .collect::<Vec<u64>>()
+            })
+            .collect();
+
+        let mut dp: Vec<Vec<u64>> = vec![Vec::new(); grid.len()];
+        for i in 0..dp.len() {
+            dp[i] = vec![0; grid[i].len()];
+        }
+
+        for i in 0..dp.len() {
+            for j in 0..dp[i].len() {
+                let mut result = 0;
+
+                if i > 0 && j > 0 {
+                    result = dp[i - 1][j - 1];
+                }
+                if i > 0 && j < dp[i - 1].len() {
+                    result = u64::max(result, dp[i - 1][j]);
+                }
+
+                dp[i][j] = u64::max(dp[i][j], result + grid[i][j]);
+            }
+        }
+
+        *dp[dp.len() - 1].iter().max().unwrap()
+    }
+}
+
+mod prob_71 {
+    use std::{fmt::Display, ops::Mul};
+
+    #[derive(Copy, Clone)]
+    pub struct Fraction {
+        pub numerator: u128,
+        pub denominator: u128,
+    }
+
+    impl PartialEq for Fraction {
+        fn eq(&self, other: &Self) -> bool {
+            self.numerator * other.denominator == self.denominator * other.numerator
+        }
+    }
+
+    #[allow(clippy::non_canonical_partial_ord_impl)]
+    impl PartialOrd for Fraction {
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+            (self.numerator * other.denominator).partial_cmp(&(self.denominator * other.numerator))
+        }
+    }
+
+    impl Eq for Fraction {}
+
+    impl Ord for Fraction {
+        fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+            self.partial_cmp(other).unwrap()
+        }
+    }
+
+    impl Fraction {
+        pub fn new(numerator: u128, denominator: u128) -> Fraction {
+            let new_numerator = numerator / gcd::binary_u128(numerator, denominator);
+            let new_denominator = denominator / gcd::binary_u128(numerator, denominator);
+
+            Fraction {
+                numerator: new_numerator,
+                denominator: new_denominator,
+            }
+        }
+    }
+
+    impl Mul for Fraction {
+        type Output = Fraction;
+
+        fn mul(self, rhs: Self) -> Self::Output {
+            Fraction::new(
+                self.numerator * rhs.numerator,
+                self.denominator * rhs.denominator,
+            )
+        }
+    }
+
+    impl Display for Fraction {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{}/{}", self.numerator, self.denominator)
+        }
+    }
+
+    pub fn solve(closest: Fraction, limit: u128) -> Fraction {
+        let mut best = Fraction::new(0, 1);
+
+        for i in 2..limit {
+            let guess = Fraction::new(closest.numerator * i / closest.denominator, i);
+
+            if guess == closest {
+                continue;
+            }
+
+            if guess > best {
+                best = guess;
+            }
+        }
+
+        best
+    }
+}
+
+mod prob_72 {}
+
+mod prob_73 {
+    use super::prob_71::Fraction;
+
+    pub fn solve(left: Fraction, right: Fraction, limit: u128) -> i32 {
+        let mut result = 0;
+
+        for n in 2..=limit {
+            let mut lower_bound = (left.numerator * n + left.denominator - 1) / left.denominator;
+            let mut upper_bound = right.numerator * n / right.denominator;
+
+            if Fraction::new(lower_bound, n) == left {
+                lower_bound += 1;
+            }
+
+            if Fraction::new(upper_bound, n) == right {
+                upper_bound -= 1;
+            }
+
+            for i in lower_bound..=upper_bound {
+                if gcd::binary_u128(i, n) == 1 {
+                    result += 1;
+                }
+            }
+        }
+
+        result
+    }
+}
+
 pub fn main() {
     match env::args().collect::<Vec<_>>()[1].as_ref() {
         "51" => println!("Problem 51: {}", prob_51::solve(8)),
@@ -1012,6 +1231,18 @@ pub fn main() {
         "57" => println!("Problem 57: {}", prob_57::solve(1000)),
         "58" => println!("Problem 58: {}", prob_58::solve(0.1)),
         "59" => println!("Problem 59: {}", prob_59::solve()),
+        "62" => println!("Problem 62: {}", prob_62::solve(5)),
+        "63" => println!("Problem 63: {}", prob_63::solve()),
+        "67" => println!("Problem 67: {}", prob_67::solve()),
+        "71" => println!(
+            "Problem 71: {}",
+            prob_71::solve(Fraction::new(3, 7), 1_000_000)
+        ),
+        "73" => println!(
+            "Problem 73: {}",
+            prob_73::solve(Fraction::new(1, 3), Fraction::new(1, 2), 12_000)
+        ),
+
         _ => panic!("Incorrect configuration"),
     }
 }
