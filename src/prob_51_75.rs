@@ -1180,6 +1180,46 @@ mod prob_64 {
     }
 }
 
+mod prob_65 {
+    use num_bigint::BigUint;
+
+    fn nth_term(index: u64) -> u64 {
+        if index == 0 {
+            return 2;
+        } else if index % 3 == 2 {
+            return (index / 3 + 1) * 2;
+        }
+
+        1
+    }
+
+    pub fn solve(index: u64) -> u64 {
+        let mut numerator = (
+            BigUint::parse_bytes(b"2", 10).unwrap(),
+            BigUint::parse_bytes(b"3", 10).unwrap(),
+        );
+        let mut denominator = (
+            BigUint::parse_bytes(b"1", 10).unwrap(),
+            BigUint::parse_bytes(b"1", 10).unwrap(),
+        );
+
+        for i in 2..index {
+            numerator = (numerator.1.clone(), numerator.0 + numerator.1 * nth_term(i));
+            denominator = (
+                denominator.1.clone(),
+                denominator.0 + denominator.1 * nth_term(i),
+            );
+        }
+
+        numerator
+            .1
+            .to_string()
+            .chars()
+            .map(|d| d.to_digit(10).unwrap() as u64)
+            .sum::<u64>()
+    }
+}
+
 mod prob_66 {
     // x^2 - Dy^2 = 1
 }
@@ -1487,6 +1527,7 @@ pub fn main() {
         "62" => println!("Problem 62: {}", prob_62::solve(5)),
         "63" => println!("Problem 63: {}", prob_63::solve()),
         "64" => println!("Problem 64: {}", prob_64::solve(10_000)),
+        "65" => println!("Problem 65: {}", prob_65::solve(100)),
         "67" => println!("Problem 67: {}", prob_67::solve()),
         "69" => println!("Problem 69: {}", prob_69::solve(1_000_000)),
         "71" => println!(
