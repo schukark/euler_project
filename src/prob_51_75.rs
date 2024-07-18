@@ -26,7 +26,7 @@ mod prob_51 {
         }
 
         sieve.iter().enumerate().for_each(|(index, value)| {
-            if !*value {
+            if !*value || index == 0 {
                 return;
             }
 
@@ -1180,6 +1180,10 @@ mod prob_64 {
     }
 }
 
+mod prob_66 {
+    // x^2 - Dy^2 = 1
+}
+
 mod prob_67 {
     use std::fs;
 
@@ -1215,6 +1219,30 @@ mod prob_67 {
         }
 
         *dp[dp.len() - 1].iter().max().unwrap()
+    }
+}
+
+mod prob_69 {
+    // n / phi(n) = n / (n * prod{(p - 1) / p}) = prod {p / (p - 1)}
+    // that's why it is sufficient to calculate prod {p / (p - 1)}
+    // until the prod of primes is over the limit
+
+    use super::prob_51::prime_number_sieve;
+
+    pub fn solve(limit: u64) -> u64 {
+        let primes = prime_number_sieve(1_000_000);
+
+        let mut result = 1;
+
+        for prime in primes {
+            if result * prime <= limit {
+                result *= prime;
+            } else {
+                break;
+            }
+        }
+
+        result
     }
 }
 
@@ -1420,6 +1448,7 @@ pub fn main() {
         "63" => println!("Problem 63: {}", prob_63::solve()),
         "64" => println!("Problem 64: {}", prob_64::solve(10_000)),
         "67" => println!("Problem 67: {}", prob_67::solve()),
+        "69" => println!("Problem 69: {}", prob_69::solve(1_000_000)),
         "71" => println!(
             "Problem 71: {}",
             prob_71::solve(Fraction::new(3, 7), 1_000_000)
