@@ -1431,6 +1431,46 @@ mod prob_74 {
     }
 }
 
+mod prob_75 {
+
+    pub fn solve(limit: u64) -> u64 {
+        let mut lookup: Vec<u64> = vec![0; limit as usize + 1];
+
+        for n in 1..=limit {
+            for m in n + 1..=limit {
+                if (m - n) % 2 == 0 || gcd::binary_u64(n, m) != 1 {
+                    continue;
+                }
+
+                let perimeter = 2 * m * (m + n);
+
+                if perimeter > limit {
+                    break;
+                }
+
+                for i in 1..=(limit / perimeter) {
+                    lookup[(perimeter * i) as usize] += 1;
+                }
+            }
+        }
+
+        let mut result = 0;
+
+        for value in lookup.iter() {
+            if *value == 1 {
+                result += 1;
+            }
+        }
+
+        result
+    }
+
+    #[test]
+    pub fn test_solve() {
+        assert_eq!(solve(48), 6);
+    }
+}
+
 pub fn main() {
     let start = Instant::now();
 
@@ -1458,6 +1498,7 @@ pub fn main() {
             prob_73::solve(Fraction::new(1, 3), Fraction::new(1, 2), 12_000)
         ),
         "74" => println!("Problem 74: {}", prob_74::solve(60, 1_000_000)),
+        "75" => println!("Problem 75: {}", prob_75::solve(1_500_000)),
 
         _ => panic!("Incorrect configuration"),
     }
