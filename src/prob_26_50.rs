@@ -949,7 +949,7 @@ mod prob_49 {
         digits == vec![0; 10]
     }
 
-    fn same_digits(numbers: &Vec<u64>) -> bool {
+    fn same_digits(numbers: &[u64]) -> bool {
         for i in 1..numbers.len() {
             if !_same_digits(numbers[i], numbers[i - 1]) {
                 return false;
@@ -964,7 +964,7 @@ mod prob_49 {
 
         for middle in 1000..10_000 {
             for step in 1..u64::min(middle, 9_999 - middle) {
-                if !same_digits(&vec![middle - step, middle, middle + step]) {
+                if !same_digits(&[middle - step, middle, middle + step]) {
                     continue;
                 }
 

@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, time::Instant};
 
 use prob_71::Fraction;
 
@@ -1072,6 +1072,113 @@ mod prob_63 {
         answer
     }
 }
+mod prob_64 {
+    use std::fmt::Display;
+
+    #[derive(PartialEq, Eq, Copy, Clone)]
+    pub struct RootFraction {
+        square_root: i64,
+        addend: i64,
+        coef: i64,
+        denominator: i64,
+    }
+
+    impl Display for RootFraction {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(
+                f,
+                "({}sqrt({})+{})/{}",
+                self.coef, self.square_root, self.addend, self.denominator
+            )
+        }
+    }
+
+    impl RootFraction {
+        pub fn new(square_root: i64, addend: i64, coef: i64, denominator: i64) -> RootFraction {
+            let gcd = gcd::binary_u64(
+                gcd::binary_u64(i64::abs(addend) as u64, i64::abs(coef) as u64),
+                i64::abs(denominator) as u64,
+            ) as i64;
+
+            RootFraction {
+                square_root,
+                addend: addend / gcd,
+                coef: coef / gcd,
+                denominator: denominator / gcd,
+            }
+        }
+
+        pub fn find_floor(&self) -> i64 {
+            f64::floor(
+                (f64::sqrt(self.square_root as f64) + self.addend as f64) / self.denominator as f64,
+            ) as i64
+        }
+
+        pub fn subtract_biggest(&self) -> RootFraction {
+            let biggest = self.find_floor();
+
+            RootFraction {
+                square_root: self.square_root,
+                addend: self.addend - biggest * self.denominator,
+                coef: self.coef,
+                denominator: self.denominator,
+            }
+        }
+
+        pub fn invert(&self) -> RootFraction {
+            RootFraction::new(
+                self.square_root,
+                -self.addend * self.denominator,
+                self.coef * self.denominator,
+                self.coef * self.coef * self.square_root - self.addend * self.addend,
+            )
+        }
+    }
+
+    fn find_cycle(square_root: i64) -> usize {
+        if f64::floor(f64::sqrt(square_root as f64)).powf(2.0) as i64 == square_root {
+            return 0;
+        }
+
+        let mut result = Vec::new();
+
+        let mut current = RootFraction::new(square_root, 0, 1, 1)
+            .subtract_biggest()
+            .invert();
+        let start = current;
+
+        result.push(current.find_floor());
+        current = current.subtract_biggest().invert();
+
+        while current != start {
+            result.push(current.find_floor());
+
+            current = current.subtract_biggest().invert();
+        }
+
+        result.len()
+    }
+
+    pub fn solve(limit: i64) -> u64 {
+        let mut result = 0;
+
+        for i in 2..=limit {
+            if find_cycle(i) % 2 == 1 {
+                result += 1;
+            }
+        }
+
+        result
+    }
+
+    #[test]
+    pub fn test_find_cycle() {
+        assert_eq!(find_cycle(2), 1);
+        assert_eq!(find_cycle(3), 2);
+        assert_eq!(find_cycle(7), 4);
+        assert_eq!(find_cycle(13), 5);
+    }
+}
 
 mod prob_67 {
     use std::fs;
@@ -1220,7 +1327,85 @@ mod prob_73 {
     }
 }
 
+mod prob_74 {
+    use std::collections::HashSet;
+
+    fn sum_factorial_digit(number: u128) -> u128 {
+        let mut answer = 0;
+
+        for digit in number.to_string().chars() {
+            answer += (1..=digit.to_digit(10).unwrap() as u128).product::<u128>();
+        }
+
+        answer
+    }
+
+    fn iterate(number: u128, current_chain: &mut HashSet<u128>) -> u128 {
+        if current_chain.contains(&number) {
+            return 0;
+        }
+        current_chain.insert(number);
+
+        let tmp = sum_factorial_digit(number);
+
+        iterate(tmp, current_chain) + 1
+    }
+
+    pub fn solve(loop_cnt: u128, limit: u128) -> u128 {
+        let mut answer = 0;
+
+        for current_number in 1..limit {
+            let mut current_chain = HashSet::new();
+
+            if iterate(current_number, &mut current_chain) == loop_cnt {
+                answer += 1;
+            }
+        }
+
+        answer
+    }
+
+    #[allow(dead_code)]
+    fn test(number: u128, expected: u128) {
+        let mut current_chain = HashSet::new();
+
+        assert_eq!(iterate(number, &mut current_chain), expected);
+    }
+
+    #[test]
+    pub fn test_69() {
+        test(69, 5);
+    }
+
+    #[test]
+    pub fn test_145() {
+        test(145, 1);
+    }
+
+    #[test]
+    pub fn test_871() {
+        test(871, 2);
+    }
+
+    #[test]
+    pub fn test_872() {
+        test(872, 2);
+    }
+
+    #[test]
+    pub fn test_78() {
+        test(78, 4);
+    }
+
+    #[test]
+    pub fn test_540() {
+        test(540, 2);
+    }
+}
+
 pub fn main() {
+    let start = Instant::now();
+
     match env::args().collect::<Vec<_>>()[1].as_ref() {
         "51" => println!("Problem 51: {}", prob_51::solve(8)),
         "52" => println!("Problem 52: {}", prob_52::solve()),
@@ -1233,6 +1418,7 @@ pub fn main() {
         "59" => println!("Problem 59: {}", prob_59::solve()),
         "62" => println!("Problem 62: {}", prob_62::solve(5)),
         "63" => println!("Problem 63: {}", prob_63::solve()),
+        "64" => println!("Problem 64: {}", prob_64::solve(10_000)),
         "67" => println!("Problem 67: {}", prob_67::solve()),
         "71" => println!(
             "Problem 71: {}",
@@ -1242,7 +1428,12 @@ pub fn main() {
             "Problem 73: {}",
             prob_73::solve(Fraction::new(1, 3), Fraction::new(1, 2), 12_000)
         ),
+        "74" => println!("Problem 74: {}", prob_74::solve(60, 1_000_000)),
 
         _ => panic!("Incorrect configuration"),
     }
+
+    let execution_time = Instant::now() - start;
+
+    println!("Time spent: {}s", execution_time.as_secs_f64());
 }
