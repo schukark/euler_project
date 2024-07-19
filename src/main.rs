@@ -1,14 +1,22 @@
-mod prob_1_25;
-mod prob_26_50;
+use std::env;
+
+pub mod problems;
+pub mod utils;
+
 mod prob_51_75;
 
 fn main() {
-    let config = "51-75";
+    let problem_number = env::args().collect::<Vec<_>>()[1].to_owned();
 
-    match config {
-        "1-25" => prob_1_25::main(),
-        "26-50" => prob_26_50::main(),
-        "51-75" => prob_51_75::main(),
+    if problem_number.parse::<u64>().is_err() {
+        panic!("Problem number was incorrect");
+    }
+
+    let problem_number = problem_number.parse::<u64>().unwrap();
+
+    match problem_number {
+        1..=25 => problems::group_1::solve(problem_number),
+        26..=50 => problems::group_2::solve(problem_number),
         _ => println!("Incorrect config"),
     };
 }
