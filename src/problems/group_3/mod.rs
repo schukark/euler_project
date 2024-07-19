@@ -49,7 +49,7 @@ pub fn solve(problem_number: u64) {
         65 => problem_65::solve(100),
         // 66 => problem_66::solve(),
         67 => problem_67::solve(),
-        // 68 => problem_68::solve(),
+        68 => problem_68::solve(),
         69 => problem_69::solve(1_000_000),
         // 70 => problem_70::solve(),
         71 => problem_71::solve(Fraction::new(3, 7), 1_000_000),
