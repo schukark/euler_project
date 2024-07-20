@@ -21,9 +21,9 @@ mod problem_92;
 // mod problem_94;
 // mod problem_95;
 // mod problem_96;
-// mod problem_97;
+mod problem_97;
 // mod problem_98;
-// mod problem_99;
+mod problem_99;
 // mod problem_100;
 
 pub fn solve(problem_number: u64) {
@@ -39,7 +39,8 @@ pub fn solve(problem_number: u64) {
         // 86 => problem_86::solve(),
         87 => problem_87::solve(),
         92 => problem_92::solve(),
-
+        97 => problem_97::solve(),
+        99 => problem_99::solve(),
         _ => panic!("Invalid problem number"),
     };
 
