@@ -56,3 +56,27 @@ pub fn next_permutation(nums: &mut [i32]) -> bool {
     nums[last_ascending + 1..].reverse();
     true
 }
+
+pub fn partition(left: i128, last: i128) -> i128 {
+    if left == 0 {
+        return 1;
+    }
+
+    if left < last {
+        return 0;
+    }
+
+    (last..=left).map(|n| partition(left - n, n)).sum()
+}
+
+pub fn partition_mod(left: i128, last: i128, modulus: i128) -> i128 {
+    if left == 0 {
+        return 1;
+    }
+
+    if left < last {
+        return 0;
+    }
+
+    (last..=left).map(|n| partition(left - n, n)).sum::<i128>() % modulus
+}
