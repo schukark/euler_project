@@ -11,12 +11,12 @@ mod problem_83;
 // mod problem_84;
 mod problem_85;
 // mod problem_86;
-// mod problem_87;
+mod problem_87;
 // mod problem_88;
 // mod problem_89;
 // mod problem_90;
 // mod problem_91;
-// mod problem_92;
+mod problem_92;
 // mod problem_93;
 // mod problem_94;
 // mod problem_95;
@@ -37,6 +37,9 @@ pub fn solve(problem_number: u64) {
         83 => problem_83::solve(),
         85 => problem_85::solve(),
         // 86 => problem_86::solve(),
+        87 => problem_87::solve(),
+        92 => problem_92::solve(),
+
         _ => panic!("Invalid problem number"),
     };
 
