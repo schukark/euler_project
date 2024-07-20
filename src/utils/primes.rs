@@ -1,3 +1,5 @@
+use num_traits::{AsPrimitive, Num};
+
 pub fn prime_number_sieve<T>(limit: usize) -> Vec<T>
 where
     T: std::str::FromStr,
@@ -99,4 +101,40 @@ where
     }
 
     primes
+}
+
+pub fn totient_sieve<T>(limit: usize) -> Vec<T>
+where
+    T: Default + Clone + Copy,
+    T: Num + AsPrimitive<usize>,
+    usize: AsPrimitive<T>,
+{
+    let mut phi: Vec<T> = vec![T::zero(); limit + 1];
+    let mut is_composite: Vec<bool> = vec![false; limit + 1];
+    let mut primes: Vec<T> = Vec::new();
+
+    phi[1] = T::one();
+
+    for i in 2..=limit {
+        if !is_composite[i] {
+            primes.push(i.as_());
+            phi[i] = (i - 1).as_();
+        }
+
+        let mut j = 0;
+
+        while j < primes.len() && i * primes[j].as_() <= limit {
+            is_composite[i * primes[j].as_()] = true;
+
+            if i % primes[j].as_() == 0 {
+                phi[i * primes[j].as_()] = phi[i] * primes[j];
+            } else {
+                phi[i * primes[j].as_()] = phi[i] * phi[primes[j].as_()];
+            }
+
+            j += 1;
+        }
+    }
+
+    phi
 }
