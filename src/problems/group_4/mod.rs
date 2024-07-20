@@ -5,9 +5,9 @@ mod problem_76;
 mod problem_78;
 // mod problem_79;
 // mod problem_80;
-// mod problem_81;
-// mod problem_82;
-// mod problem_83;
+mod problem_81;
+mod problem_82;
+mod problem_83;
 // mod problem_84;
 // mod problem_85;
 // mod problem_86;
@@ -32,6 +32,9 @@ pub fn solve(problem_number: u64) {
     let result = match problem_number {
         76 => problem_76::solve(100),
         78 => problem_78::solve(),
+        81 => problem_81::solve(),
+        82 => problem_82::solve(),
+        83 => problem_83::solve(),
 
         _ => panic!("Invalid problem number"),
     };

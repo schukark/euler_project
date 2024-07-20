@@ -1,7 +1,7 @@
 use crate::utils::file_ops::read_grid;
 
 pub fn solve() -> u64 {
-    let grid = read_grid("src/txts/prob_11.txt").into_iter().flatten().collect::<Vec<i32>>();
+    let grid = read_grid("src/txts/prob_11.txt", " ").into_iter().flatten().collect::<Vec<i32>>();
 
     assert_eq!(grid.len(), 400);
 

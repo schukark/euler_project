@@ -1,7 +1,7 @@
 use crate::utils::file_ops::read_grid;
 
 pub fn solve() -> i128 {
-    let grid = read_grid::<i128>("src/txts/prob_67.txt");
+    let grid = read_grid::<i128>("src/txts/prob_67.txt", " ");
 
     let mut dp: Vec<Vec<i128>> = vec![Vec::new(); grid.len()];
     for i in 0..dp.len() {

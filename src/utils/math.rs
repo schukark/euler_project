@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 pub fn choose(n: u64, k: u64, map: &mut BTreeMap<(u64, u64), u64>) -> u64 {
     if let Some(get) = map.get(&(n, k)) {
@@ -69,14 +69,50 @@ pub fn partition(left: i128, last: i128) -> i128 {
     (last..=left).map(|n| partition(left - n, n)).sum()
 }
 
-pub fn partition_mod(left: i128, last: i128, modulus: i128) -> i128 {
-    if left == 0 {
+pub fn partition_fast_mod(number: i64, lookup: &mut HashMap<i64, i64>, modulus: i64) -> i64 {
+    if let Some(e) = lookup.get(&number) {
+        return *e;
+    }
+
+    if number == 0 {
         return 1;
     }
 
-    if left < last {
+    if number < 0 {
         return 0;
     }
 
-    (last..=left).map(|n| partition(left - n, n)).sum::<i128>() % modulus
+    let mut k = 1;
+
+    let mut result = 0;
+
+    loop {
+        if number < k * (3 * k - 1) / 2 {
+            break;
+        }
+
+        let tmp = partition_fast_mod(number - k * (3 * k - 1) / 2, lookup, modulus)
+            + partition_fast_mod(number - k * (3 * k + 1) / 2, lookup, modulus);
+
+        if k % 2 == 1 {
+            result += tmp;
+        } else {
+            result -= tmp;
+        }
+
+        result %= modulus;
+
+        k += 1;
+    }
+
+    lookup.insert(number, result);
+
+    result
+}
+
+#[test]
+fn test_partition_fast() {
+    let mut lookup = HashMap::new();
+    let partition_fast = partition_fast_mod(5, &mut lookup, 10);
+    assert_eq!(partition_fast, 7);
 }

@@ -8,7 +8,7 @@ pub fn read_file(path: &str) -> Vec<String> {
         .collect::<Vec<String>>()
 }
 
-pub fn read_grid<T>(path: &str) -> Vec<Vec<T>>
+pub fn read_grid<T>(path: &str, sep: &str) -> Vec<Vec<T>>
 where
     T: std::str::FromStr,
     T::Err: std::fmt::Debug,
@@ -18,7 +18,7 @@ where
         .split('\n')
         .map(|s| s.to_owned())
         .map(|g| {
-            g.split_whitespace()
+            g.split(sep)
                 .map(|c| c.parse::<T>().unwrap())
                 .collect::<Vec<T>>()
         })
