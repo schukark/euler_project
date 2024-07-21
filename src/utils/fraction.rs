@@ -1,9 +1,12 @@
-use std::{fmt::Display, ops::Mul};
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign},
+};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Fraction {
-    pub numerator: u128,
-    pub denominator: u128,
+    pub numerator: i128,
+    pub denominator: i128,
 }
 
 impl PartialEq for Fraction {
@@ -28,14 +31,66 @@ impl Ord for Fraction {
 }
 
 impl Fraction {
-    pub fn new(numerator: u128, denominator: u128) -> Fraction {
-        let new_numerator = numerator / gcd::binary_u128(numerator, denominator);
-        let new_denominator = denominator / gcd::binary_u128(numerator, denominator);
+    pub fn new(numerator: i128, denominator: i128) -> Fraction {
+        let mut new_numerator = numerator
+            / gcd::binary_u128(i128::abs(numerator) as u128, i128::abs(denominator) as u128)
+                as i128;
+        let mut new_denominator = denominator
+            / gcd::binary_u128(i128::abs(numerator) as u128, i128::abs(denominator) as u128)
+                as i128;
+
+        if denominator < 0 {
+            new_numerator *= -1;
+            new_denominator *= -1;
+        }
 
         Fraction {
             numerator: new_numerator,
             denominator: new_denominator,
         }
+    }
+
+    pub fn inverse(&self) -> Fraction {
+        assert!(self.numerator != 0);
+
+        Fraction {
+            numerator: self.denominator,
+            denominator: self.numerator,
+        }
+    }
+}
+
+impl Add for Fraction {
+    type Output = Fraction;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Fraction::new(
+            self.numerator * rhs.denominator + self.denominator * rhs.numerator,
+            self.denominator * rhs.denominator,
+        )
+    }
+}
+
+impl AddAssign for Fraction {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
+    }
+}
+
+impl Sub for Fraction {
+    type Output = Fraction;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Fraction::new(
+            self.numerator * rhs.denominator - self.denominator * rhs.numerator,
+            self.denominator * rhs.denominator,
+        )
+    }
+}
+
+impl SubAssign for Fraction {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
     }
 }
 
@@ -50,8 +105,22 @@ impl Mul for Fraction {
     }
 }
 
+impl Neg for Fraction {
+    type Output = Fraction;
+
+    fn neg(self) -> Self::Output {
+        Fraction::new(-self.numerator, self.denominator)
+    }
+}
+
 impl Display for Fraction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}/{}", self.numerator, self.denominator)
+    }
+}
+
+impl From<i32> for Fraction {
+    fn from(value: i32) -> Self {
+        Fraction::new(value as i128, 1)
     }
 }

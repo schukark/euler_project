@@ -1,6 +1,6 @@
 use crate::utils::fraction::Fraction;
 
-pub fn solve(left: Fraction, right: Fraction, limit: u128) -> i128 {
+pub fn solve(left: Fraction, right: Fraction, limit: i128) -> i128 {
     let mut result = 0;
 
     for n in 2..=limit {
@@ -16,7 +16,7 @@ pub fn solve(left: Fraction, right: Fraction, limit: u128) -> i128 {
         }
 
         for i in lower_bound..=upper_bound {
-            if gcd::binary_u128(i, n) == 1 {
+            if gcd::binary_u128(i as u128, n as u128) == 1 {
                 result += 1;
             }
         }

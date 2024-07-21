@@ -1,6 +1,6 @@
 use crate::utils::fraction::Fraction;
 
-pub fn solve(closest: Fraction, limit: u128) -> i128 {
+pub fn solve(closest: Fraction, limit: i128) -> i128 {
     let mut best = Fraction::new(0, 1);
 
     for i in 2..limit {
