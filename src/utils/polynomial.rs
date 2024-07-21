@@ -34,11 +34,11 @@ impl Polynomial {
                     continue;
                 }
 
-                let factor = (x[i] - x[j]).inverse() * y[i];
+                let factor = (x[i] - x[j]).inverse();
                 current *= Polynomial::new(&[-x[j] * factor, factor]);
             }
 
-            answer = answer + current;
+            answer = answer + current * Polynomial::new(&[y[i]]);
         }
 
         answer
@@ -178,6 +178,17 @@ mod tests {
         assert_eq!(
             Polynomial::fit(&[1.into(), 2.into()], &[1.into(), 8.into()]),
             Polynomial::new(&[(-6).into(), 7.into()])
+        );
+    }
+
+    #[test]
+    fn test_poly_fit2() {
+        assert_eq!(
+            Polynomial::fit(
+                &[1.into(), 2.into(), 3.into()],
+                &[1.into(), 8.into(), 27.into()]
+            ),
+            Polynomial::new(&[6.into(), (-11).into(), 6.into()])
         );
     }
 }
