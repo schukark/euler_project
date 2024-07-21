@@ -1,3 +1,5 @@
+#![feature(isqrt)]
+
 use std::env;
 
 pub mod problems;
