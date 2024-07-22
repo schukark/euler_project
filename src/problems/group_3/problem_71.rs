@@ -15,5 +15,5 @@ pub fn solve(closest: Fraction, limit: i128) -> i128 {
         }
     }
 
-    best.numerator as i128
+    best.numerator
 }
