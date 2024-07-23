@@ -2,6 +2,7 @@ use std::time::Instant;
 
 mod problem_101;
 mod problem_104;
+mod problem_108;
 mod problem_123;
 
 pub fn solve(problem_number: u64) {
@@ -10,6 +11,7 @@ pub fn solve(problem_number: u64) {
     let result = match problem_number {
         101 => problem_101::solve(),
         104 => problem_104::solve(),
+        108 => problem_108::solve(),
         123 => problem_123::solve(),
         _ => panic!("Incorrect problem number"),
     };
