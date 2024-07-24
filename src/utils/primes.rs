@@ -74,11 +74,11 @@ pub fn count_div(number: u64) -> u64 {
 
 pub fn get_prime_exponents<T>(number: T) -> Vec<(T, T)>
 where
-    T: std::cmp::PartialOrd<i128>
-        + std::ops::Rem<i128>
-        + std::ops::DivAssign<i128>
-        + std::convert::From<i128>,
-    <T as std::ops::Rem<i128>>::Output: std::cmp::PartialEq<i128>,
+    T: std::cmp::PartialOrd<i64>
+        + std::ops::Rem<i64>
+        + std::ops::DivAssign<i64>
+        + std::convert::From<i64>,
+    <T as std::ops::Rem<i64>>::Output: std::cmp::PartialEq<i64>,
     T: Copy,
 {
     let mut primes: Vec<(T, T)> = Vec::new();
@@ -86,7 +86,7 @@ where
     let mut number = number;
     let mut cur_div = 2;
 
-    while number > 1 {
+    while number > cur_div * cur_div {
         let mut count = 0;
         while number % cur_div == 0 {
             number /= cur_div;
@@ -100,7 +100,46 @@ where
         cur_div += 1;
     }
 
+    if number > 1 {
+        primes.push((number, 1.into()));
+    }
+
     primes
+}
+
+pub fn get_factorization_fast<T>(mut number: T, primes: &[T]) -> Vec<(T, i32)>
+where
+    T: std::cmp::PartialOrd<T>
+        + std::ops::Rem<Output = T>
+        + std::ops::DivAssign<T>
+        + std::ops::Mul<Output = T>
+        + From<i32>
+        + Copy,
+{
+    let mut factorization = Vec::new();
+
+    for &prime in primes {
+        if prime * prime > number {
+            break;
+        }
+
+        let mut count = 0;
+
+        while number % prime == 0.into() {
+            number /= prime;
+            count += 1;
+        }
+
+        if count > 0 {
+            factorization.push((prime, count));
+        }
+    }
+
+    if number > 1.into() {
+        factorization.push((number, 1));
+    }
+
+    factorization
 }
 
 pub fn totient_sieve<T>(limit: usize) -> Vec<T>

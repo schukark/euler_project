@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::utils::primes::get_prime_exponents;
 
-fn mult_array(powers: &mut Vec<(i128, i128)>, count: i128) {
+fn mult_array(powers: &mut Vec<(i64, i64)>, count: i64) {
     for number in powers {
         number.1 *= count;
     }
