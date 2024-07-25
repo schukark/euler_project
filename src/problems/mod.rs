@@ -4,3 +4,4 @@ pub mod group_3;
 pub mod group_4;
 pub mod group_5;
 pub mod group_6;
+pub mod group_7;
