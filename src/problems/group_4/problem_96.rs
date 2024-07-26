@@ -106,11 +106,11 @@ impl SudokuGrid {
             return HashSet::new();
         }
         let digits = self
-            .absent_col(0)
+            .absent_col(y)
             .intersection(
                 &self
-                    .absent_row(0)
-                    .intersection(&self.absent_square(0, 0))
+                    .absent_row(x)
+                    .intersection(&self.absent_square(x / 3, y / 3))
                     .copied()
                     .collect(),
             )
@@ -121,15 +121,9 @@ impl SudokuGrid {
     }
 
     fn check_solved(&self) -> bool {
-        (0..9).all(|f| self.absent_row(f).iter().filter(|&&x| x == 0).count() == 9)
-            && (0..9).all(|f| self.absent_col(f).iter().filter(|&&x| x == 0).count() == 9)
-            && (0..9).all(|f| {
-                self.absent_square(f / 3, f % 3)
-                    .iter()
-                    .filter(|&&x| x == 0)
-                    .count()
-                    == 9
-            })
+        (0..9)
+            .map(|line_idx| self.cells[line_idx].iter().all(|x| !x.is_empty()))
+            .all(|x| x)
     }
 
     fn solve(&mut self) -> bool {
@@ -162,6 +156,8 @@ impl SudokuGrid {
                 return true;
             }
         }
+
+        self.cells[best.0][best.1] = GridCell::Empty;
 
         false
     }
@@ -211,7 +207,6 @@ pub fn solve() -> i128 {
         .iter_mut()
         .map(|sudoku| {
             sudoku.solve();
-            println!("{}", sudoku);
             sudoku.get_top_left_sum()
         })
         .sum::<i128>()
