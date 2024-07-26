@@ -1,38 +1,33 @@
 use std::collections::BTreeSet;
 
 pub fn solve() -> i128 {
-    let mut values = BTreeSet::new();
+    const LIMIT: i128 = 12;
+    let mut values: BTreeSet<i128> = BTreeSet::new();
 
-    for sum in 1.. {
-        //m > n => sum - n > n => n < sum / 2
-        for n in 1..=sum / 2 {
-            let m = sum - n;
+    let (mut a, mut b): (i128, i128) = (9, 4);
 
-            if m % 2 == 1 && n % 2 == 1 {
-                continue;
-            }
+    //case 1: x^2 - 5y^2 = 1
+    for _i in 0..LIMIT {
+        values.insert((a + 2 * b).pow(2) + b.pow(2));
 
-            if gcd::binary_u32(n as u32, m as u32) != 1 {
-                continue;
-            }
-
-            if i32::abs(m * m - n * n - 4 * m * n) != 1 {
-                continue;
-            }
-
-            let length = m * m + n * n;
-
-            if values.len() == 12 && length > *values.last().unwrap() {
-                break;
-            }
-
-            values.insert(length);
-
-            if values.len() > 12 {
-                values.pop_last();
-            }
-        }
+        (a, b) = (9 * a + 20 * b, 4 * a + 9 * b);
+        assert_eq!(a.pow(2) - 5 * b.pow(2), 1);
     }
 
-    values.iter().sum::<i32>() as i128
+    //case 2: x^2 - 5y^2 = -1
+    let (mut a, mut b): (i128, i128) = (2, 1);
+    for _i in 0..LIMIT {
+        values.insert((a + 2 * b).pow(2) + b.pow(2));
+
+        (a, b) = (9 * a + 20 * b, 4 * a + 9 * b);
+        assert_eq!(a.pow(2) - 5 * b.pow(2), -1);
+    }
+
+    while values.len() > LIMIT as usize {
+        values.pop_last();
+    }
+
+    println!("{:#?}, len is {}", values, values.len());
+
+    values.iter().sum::<i128>()
 }
