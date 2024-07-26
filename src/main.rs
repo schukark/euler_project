@@ -1,4 +1,4 @@
-#![feature(isqrt)]
+#![feature(isqrt, iter_array_chunks)]
 
 use std::env;
 
