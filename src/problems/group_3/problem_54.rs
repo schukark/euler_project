@@ -123,11 +123,11 @@ impl Hand {
         self.is_flush()
             && self.cards.iter().map(|a| a.value).collect::<Vec<_>>()
                 == vec![
-                    Value::Ace,
                     Value::Number(10),
                     Value::Jack,
                     Value::Queen,
                     Value::King,
+                    Value::Ace,
                 ]
     }
 
@@ -322,7 +322,7 @@ pub fn test_royal_flush() {
     let hand3 = Hand::from_string("TH AH KH QH 6H");
     assert!(!hand3.is_royal_flush());
 
-    let hand4 = Hand::from_string("TH AH KH QH TH");
+    let hand4 = Hand::from_string("TH AH KH QH 7H");
     assert!(!hand4.is_royal_flush());
 }
 
