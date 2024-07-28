@@ -6,6 +6,7 @@ mod problem_108;
 mod problem_110;
 mod problem_120;
 mod problem_123;
+mod problem_124;
 
 pub fn solve(problem_number: u64) {
     let start = Instant::now();
@@ -17,6 +18,7 @@ pub fn solve(problem_number: u64) {
         110 => problem_110::solve(),
         120 => problem_120::solve(),
         123 => problem_123::solve(),
+        124 => problem_124::solve(),
         _ => panic!("Incorrect problem number"),
     };
 
