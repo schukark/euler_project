@@ -22,7 +22,12 @@ fn main() {
         101..=125 => problems::group_5::solve(problem_number),
         126..=150 => problems::group_6::solve(problem_number),
         151..=175 => problems::group_7::solve(problem_number),
+
         201..=225 => problems::group_9::solve(problem_number),
+
+
+        351..=375 => problems::group_15::solve(problem_number),
+
         _ => println!("Incorrect config"),
     };
 }
