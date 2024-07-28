@@ -3,3 +3,4 @@ pub mod fraction;
 pub mod math;
 pub mod polynomial;
 pub mod primes;
+pub mod geometry;
