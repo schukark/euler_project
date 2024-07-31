@@ -25,7 +25,6 @@ fn main() {
 
         201..=225 => problems::group_9::solve(problem_number),
 
-
         351..=375 => problems::group_15::solve(problem_number),
 
         _ => println!("Incorrect config"),
