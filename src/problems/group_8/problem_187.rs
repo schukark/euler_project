@@ -5,7 +5,7 @@ use crate::utils::primes::prime_number_sieve;
 const LIMIT: i128 = 100_000_000_i128;
 
 pub fn solve() -> i128 {
-    let primes: Vec<i128> = prime_number_sieve(10usize.pow(8));
+    let primes: Vec<i128> = prime_number_sieve(LIMIT as usize);
 
     let mut number_set = HashSet::new();
 
