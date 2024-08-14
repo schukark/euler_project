@@ -1,3 +1,4 @@
+pub mod ellipse;
 pub mod line;
 pub mod point;
-pub mod ellipse;
+pub mod triangle;
