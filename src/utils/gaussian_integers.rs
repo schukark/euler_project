@@ -6,7 +6,6 @@ pub struct GaussianInteger {
     imag: i64,
 }
 
-const IMAG_UNIT: GaussianInteger = GaussianInteger { real: 0, imag: 1 };
 const ZERO: GaussianInteger = GaussianInteger { real: 0, imag: 0 };
 
 impl GaussianInteger {
