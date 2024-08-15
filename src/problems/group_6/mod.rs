@@ -1,6 +1,7 @@
 use std::time::Instant;
 
 mod problem_132;
+mod problem_135;
 mod problem_137;
 mod problem_138;
 mod problem_139;
@@ -11,6 +12,7 @@ pub fn solve(problem_number: u64) {
 
     let result = match problem_number {
         132 => problem_132::solve(),
+        135 => problem_135::solve(),
         137 => problem_137::solve(),
         138 => problem_138::solve(),
         139 => problem_139::solve(),
