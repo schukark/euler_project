@@ -1,11 +1,13 @@
 use std::time::Instant;
 
+mod problem_183;
 mod problem_187;
 
 pub fn solve(problem_number: u64) {
     let start = Instant::now();
 
     let result = match problem_number {
+        183 => problem_183::solve(),
         187 => problem_187::solve(),
         _ => panic!("Incorrect problem number"),
     };
