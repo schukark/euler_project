@@ -6,7 +6,6 @@ use crate::utils::primes::prime_number_sieve;
 /// if n is odd, then it equals 2n * p_n
 ///
 /// The remainder exceeds 10 ^ 10 => n * p_n >= 10 ^ 10 / 2
-
 pub fn solve() -> i128 {
     let primes: Vec<i128> = prime_number_sieve(100_000_000);
     let new_primes = primes

@@ -43,7 +43,6 @@ use std::collections::BTreeSet;
 /// ### Case b
 /// t = 2
 /// p ^ 2 - 4pq - q ^ 2 = -1 => (p - 2q) ^ 2 - 5q^2 = -1 - tied to Pell's equation
-
 const LIMIT: i32 = 15;
 
 pub fn solve() -> i128 {

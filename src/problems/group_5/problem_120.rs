@@ -13,7 +13,6 @@
 /// if a is even, then 2na mod a^2 will be optimal if 2na is the last even multiple of 2a before a^2 => 2na = a^2 - 2a
 ///
 /// if a is odd, then 2na mod a^2 will be optimal if 2na is the last multiplte of a before a^2 => 2na = a^2 - a
-
 pub fn solve() -> i128 {
     (3..=1000).map(solve_a).sum::<i32>() as i128
 }

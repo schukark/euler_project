@@ -24,7 +24,6 @@
 /// x_n + y_n * sqrt(2) = (1+ sqrt(2)) ^ (2n - 1)
 ///
 /// Therefore: x_(n + 1) = 3x_n + 4y_n, y_(n + 1) = 2x_n + 3y_n
-
 pub fn solve() -> i128 {
     const LIMIT: i128 = 10_i128.pow(12);
 

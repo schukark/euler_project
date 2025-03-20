@@ -121,9 +121,7 @@ impl SudokuGrid {
     }
 
     fn check_solved(&self) -> bool {
-        (0..9)
-            .map(|line_idx| self.cells[line_idx].iter().all(|x| !x.is_empty()))
-            .all(|x| x)
+        (0..9).all(|line_idx| self.cells[line_idx].iter().all(|x| !x.is_empty()))
     }
 
     fn solve(&mut self) -> bool {

@@ -1,4 +1,4 @@
-#![feature(isqrt, iter_array_chunks)]
+#![feature(iter_array_chunks)]
 
 use std::env;
 
@@ -24,7 +24,7 @@ fn main() {
         151..=175 => problems::group_7::solve(problem_number),
         176..=200 => problems::group_8::solve(problem_number),
         201..=225 => problems::group_9::solve(problem_number),
-        226..=250 => problems::group_9::solve(problem_number),
+        226..=250 => problems::group_10::solve(problem_number),
 
         351..=375 => problems::group_15::solve(problem_number),
 

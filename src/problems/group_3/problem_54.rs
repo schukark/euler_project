@@ -141,7 +141,7 @@ impl Hand {
             acc
         });
 
-        if !counts.iter().any(|&count| count == 4) {
+        if !counts.contains(&4) {
             None
         } else {
             Some(counts.to_vec().iter().position(|x| *x == 4).unwrap() as i128 + 1)
@@ -188,7 +188,7 @@ impl Hand {
             acc
         });
 
-        if !counts.iter().any(|&count| count == 3) {
+        if !counts.contains(&3) {
             None
         } else {
             Some(counts.to_vec().iter().position(|x| *x == 3).unwrap() as i128 + 1)
@@ -225,7 +225,7 @@ impl Hand {
             acc
         });
 
-        if !counts.iter().any(|&count| count == 2) {
+        if !counts.contains(&2) {
             None
         } else {
             Some(counts.to_vec().iter().position(|x| *x == 2).unwrap() as i128 + 1)

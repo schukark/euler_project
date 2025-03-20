@@ -46,7 +46,6 @@ impl Default for Triangle {
 }
 
 #[cfg(test)]
-
 mod tests {
     use crate::utils::geometry::point::Point;
 
