@@ -28,6 +28,8 @@ fn main() {
 
         351..=375 => problems::group_15::solve(problem_number),
 
+        700..=725 => problems::group_29::solve(problem_number),
+
         _ => println!("Incorrect config"),
     };
 }
