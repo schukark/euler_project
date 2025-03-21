@@ -42,7 +42,7 @@ pub fn solve(problem_number: u64) {
         58 => problem_58::solve(0.1),
         59 => problem_59::solve(),
         // 60 => problem_60::solve(5),
-        // 61 => problem_61::solve(),
+        61 => problem_61::solve(),
         62 => problem_62::solve(5),
         63 => problem_63::solve(),
         64 => problem_64::solve(10_000),
