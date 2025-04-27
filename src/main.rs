@@ -1,4 +1,5 @@
 #![feature(iter_array_chunks)]
+#![feature(f128)]
 
 use std::env;
 
@@ -28,8 +29,9 @@ fn main() {
 
         351..=375 => problems::group_15::solve(problem_number),
 
-        700..=725 => problems::group_29::solve(problem_number),
-        800..=825 => problems::group_33::solve(problem_number),
+        701..=725 => problems::group_29::solve(problem_number),
+        751..=775 => problems::group_31::solve(problem_number),
+        801..=825 => problems::group_33::solve(problem_number),
 
         _ => println!("Incorrect config"),
     };

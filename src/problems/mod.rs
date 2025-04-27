@@ -13,4 +13,6 @@ pub mod group_15;
 
 pub mod group_29;
 
+pub mod group_31;
+pub mod group_32;
 pub mod group_33;
